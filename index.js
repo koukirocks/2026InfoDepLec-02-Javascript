@@ -9,11 +9,6 @@ const todoData = [
     title: "todo 2",
     completed: false
   },
-  {
-    id: 3,
-    title: "todo 3",
-    completed: false
-  },
 ];
 const itemTemplate = document.querySelector("#todo-item-template");
 const todoList = document.querySelector("#todos");
@@ -38,6 +33,7 @@ function setupEventListeners() {
     todoData.push(todo);
     
     todoInput.value = "";
+    updateTodoCount(1);
 
     /* 使用updateTodoCount()更新paragraph element*/
   });
@@ -45,7 +41,13 @@ function setupEventListeners() {
   
   /* 找到 Mark All Complete 的按鈕，並使用addEventListener()，在點擊按鈕時觸發toggleAllTodos() */
 
+  allCompleteButton = document.querySelector("#toggle-all")
+  allCompleteButton.addEventListener("click", toggleAllTodos)
+
   /* 找到 Clear Completed 的按鈕，並使用addEventListener()，在點擊按鈕時觸發clearCompletedTodos() */
+  
+  clearCompletedButton = document.querySelector("#clear-completed")
+  clearCompletedButton.addEventListener("click", clearCompletedTodos)
 }
 
 function renderTodo(todo) {
@@ -80,6 +82,10 @@ function deleteTodoElement(id) {
   const checkbox = todoElement.querySelector(`input[type="checkbox"]`);
 
   /* 檢查checkbox是否被勾選，如果沒有的話，才要使用updateTodoCount()更新paragraph element */
+  if (checkbox.checked) {
+  } else {
+    updateTodoCount(-1);
+  }
   todoElement.remove();
 
   const todo = todoData.find((todo) => todo.id === id);
@@ -89,6 +95,11 @@ function deleteTodoElement(id) {
 function updateTodoElementStatus(id) {
   const todoElement = document.getElementById(String(id));
   const checkbox = todoElement.querySelector('input[type="checkbox"]');
+  if (checkbox.checked) {
+    updateTodoCount(-1);
+  } else {
+    updateTodoCount(1);
+  }
 
   /* 依checkbox是否被勾選，使用updateTodoCount()更新paragraph element*/
 
@@ -107,6 +118,8 @@ function createTodo(title) {
 
 function updateTodoCount(increment) {
   todoCount += increment;
+  element = document.querySelector("#todos-count")
+  element.innerHTML = todoCount+ " incomplete todos"
   /* 
   找到"2 incomplete todos"的paragraph element所對應的id，使用
   document.querySelector() 和
@@ -117,20 +130,20 @@ function updateTodoCount(increment) {
 }
 
 function toggleAllTodos() {
-  return;
   /*
   可使用下方程式碼實作，並填入[]的內容:
+  */
 
-  todoData.[]((todo) => {
+  todoData.forEach((todo) => {
     if (!todo.completed){
       const todoElement = document.getElementById(String(todo.id));
-      const checkbox = todoElement.querySelector(`input[type="checkbox"]`);
-      [] --> 把checkbox打勾
-      [] --> 使用updateTodoElementStatus()，更新todoData裡面todo.completed的值
+      const checkbox = todoElement.querySelector(`input[type="checkbox"]`); // a
+      checkbox.checked = true; // --> 把checkbox打勾
+      updateTodoElementStatus(todo.id); // --> 使用updateTodoElementStatus()，更新todoData裡面todo.completed的值
     }
   });
+  return;
 
-  */
 }
 
 function clearCompletedTodos() {
@@ -138,6 +151,14 @@ function clearCompletedTodos() {
   1. 使用array的某個函式，得到一個新的array，裡面只包含todo.completed為true的todos
   2. 檢查新的array是否為空。如果不是，使用array的另一個函式以及deleteTodoElement()，刪除每個已完成的todo element
   */
+  let completedArray = todoData.filter((todo) => todo.completed);
+  
+  if (completedArray.length != 0) {
+    completedArray.forEach((todo) => {
+        deleteTodoElement(todo.id);
+    });
+  }
+  return ;
 }
 
 main();
